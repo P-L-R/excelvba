@@ -1,0 +1,108 @@
+Sub importCSVandFilter()
+'
+' importCSV Macro
+'
+' Keyboard Shortcut: Ctrl+Shift+Q
+'
+Application.ScreenUpdating = False
+
+Dim sPath As String
+sPath = Excel.Application.GetOpenFilename
+'
+    With ActiveSheet.QueryTables.Add(Connection:= _
+        "TEXT;" & sPath _
+        , Destination:=Range("$A$1"))
+        .Name = sPath
+        .FieldNames = True
+        .RowNumbers = False
+        .FillAdjacentFormulas = False
+        .PreserveFormatting = True
+        .RefreshOnFileOpen = False
+        .RefreshStyle = xlInsertDeleteCells
+        .SavePassword = False
+        .SaveData = True
+        .AdjustColumnWidth = True
+        .RefreshPeriod = 0
+        .TextFilePromptOnRefresh = False
+        .TextFilePlatform = 437
+        .TextFileStartRow = 1
+        .TextFileParseType = xlDelimited
+        .TextFileTextQualifier = xlTextQualifierDoubleQuote
+        .TextFileConsecutiveDelimiter = False
+        .TextFileTabDelimiter = False
+        .TextFileSemicolonDelimiter = True
+        .TextFileCommaDelimiter = False
+        .TextFileSpaceDelimiter = False
+        .TextFileColumnDataTypes = Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+        .TextFileTrailingMinusNumbers = True
+        .Refresh BackgroundQuery:=False
+    End With
+    Columns("C:C").EntireColumn.AutoFit
+    Columns("C:C").Select
+    Selection.Replace What:="1_", Replacement:="", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    Columns("F:F").EntireColumn.AutoFit
+    Columns("G:G").EntireColumn.AutoFit
+    Columns("J:J").EntireColumn.AutoFit
+    Columns("K:K").EntireColumn.AutoFit
+    Columns("M:M").EntireColumn.AutoFit
+    Columns("I:I").EntireColumn.AutoFit
+    Columns("H:H").EntireColumn.AutoFit
+    Columns("F:G").Select
+    Range("G1").Activate
+    Selection.NumberFormat = "m/d/yyyy h:mm:ss"
+    Range("N1").Select
+    ActiveCell.FormulaR1C1 = "Remark"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    With ActiveWindow
+        .SplitColumn = 3
+        .SplitRow = 1
+    End With
+    ActiveWindow.FreezePanes = True
+
+' filterTest Macro
+'
+    Dim ws As Worksheet
+    Dim rng As Range
+    Dim lastRow As Long
+
+    Set ws = ActiveWorkbook.Sheets("Sheet1")
+
+    lastRow = ws.Range("A" & ws.Rows.Count).End(xlUp).Row
+
+    Set rng = ws.Range("A1:A" & lastRow)
+
+    ' filter and delete all but header row
+    With rng
+        .AutoFilter Field:=1, Criteria1:= _
+        "ORPHANED"
+        .Offset(1, 0).SpecialCells(xlCellTypeVisible).EntireRow.Delete
+    End With
+    
+    With rng
+        .AutoFilter Field:=1, Criteria1:= _
+        "UNMATCHED"
+        .Offset(0, 0).SpecialCells(xlCellTypeVisible).EntireRow.Style = "Bad"
+    End With
+    
+    With rng
+        .AutoFilter Field:=1, Criteria1:= _
+        "WARNING"
+        .Offset(0, 0).SpecialCells(xlCellTypeVisible).EntireRow.Style = "Neutral"
+    End With
+    
+    With rng
+        .AutoFilter Field:=1
+    End With
+    Rows("1:1").EntireRow.Style = "Normal"
+    ' turn off the filters
+    Columns("A:A").ColumnWidth = 9.43
+    Columns("I:I").ColumnWidth = 7.43
+    Columns("H:H").ColumnWidth = 8.14
+    Columns("L:L").ColumnWidth = 2.57
+    Columns("B:B").ColumnWidth = 9.29
+'
+
+End Sub
