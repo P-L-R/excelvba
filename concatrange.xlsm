@@ -1,0 +1,26 @@
+Function ConcatenateRange(ByVal cell_range As Range, _
+                    Optional ByVal prefix As String, Optional ByVal seperator As String) As String
+
+Dim cell As Range
+Dim newString As String
+Dim cellArray As Variant
+Dim i As Long, j As Long
+
+cellArray = cell_range.Value
+
+For i = 1 To UBound(cellArray, 1)
+    For j = 1 To UBound(cellArray, 2)
+        If Len(cellArray(i, j)) <> 0 Then
+            newString = newString & (seperator & prefix & cellArray(i, j))
+        End If
+    Next
+Next
+
+If Len(newString) <> 0 Then
+    newString = Right$(newString, (Len(newString) - Len(seperator)))
+End If
+
+ConcatenateRange = newString
+
+End Function
+
